@@ -7,7 +7,7 @@ trigger:
 - main
 
 variables:
-- group: DB_CONN
+- group: DOCKER_LOGIN
 
 stages:
   - stage: Build
