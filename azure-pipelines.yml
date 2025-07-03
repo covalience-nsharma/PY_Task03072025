@@ -1,0 +1,143 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- main
+
+variables:
+- group: DB_CONN
+
+stages:
+  - stage: Build
+    displayName: Build & Publish Artifact
+    jobs:
+      - job: Build
+        displayName: Build and Publish
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.12'
+          displayName: 'Use Python 3.12'
+
+        - script: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+          displayName: 'Install dependencies'
+
+        # - task: ArchiveFiles@2
+        #   inputs:
+        #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        #     includeRootFolder: false
+        #     archiveType: 'zip'
+        #     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        #     replaceExistingArchive: true
+
+        # - task: PublishBuildArtifacts@1
+        #   inputs:
+        #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        #     ArtifactName: 'drop'
+        #     publishLocation: 'Container'
+
+        - script: |
+            pip install pytest pytest-azurepipelines
+            pytest
+          displayName: 'pytest'
+
+
+  - stage: Deploy
+    displayName: Deploy to Server
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        displayName: Build Docker Image, Push, and Deploy
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+        # - download: current
+        #   artifact: drop
+        #   displayName: 'Download drop artifact'
+
+        # - script: |
+        #     echo "Downloaded artifact contents:"
+        #     ls -lR $(Pipeline.Workspace)/drop
+        #   displayName: 'List downloaded artifact contents'
+
+        # - task: Docker@2
+        #   inputs:
+        #     containerRegistry: 'Docker Login'
+        #     command: 'login'
+
+
+
+
+        - task: Docker@2
+          inputs:
+            containerRegistry: 'Docker Login'
+            repository: 'devnsharma/py_container'
+            command: 'buildAndPush'
+            Dockerfile: '**/Dockerfile'
+
+        # # Build Docker image
+        # - script: |
+        #    docker build -t devnsharma/py_task:$(Build.BuildId) $(Pipeline.Workspace)/drop
+        #   displayName: 'Build Docker Image'
+        
+        # # Push Docker image to Docker Hub
+        # - script: |
+        #     echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+        #     docker push devnsharma/py_task:$(Build.BuildId)
+        #   displayName: 'Push Docker Image to Docker Hub'
+
+        #SSH into server and pull & run the image
+        # - task: SSH@0
+        #   inputs:
+        #     sshEndpoint: 'ubuntu@training.covalience.tech'
+        #     runOptions: 'inline'
+        #     inline: |
+        #       echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+        #       # Ensure network and volume exist
+        #       # sudo docker network create myapp-network-1 || true
+        #       sudo docker volume create db_data || true
+
+        #       # Clean up old containers if they exist
+        #       sudo docker stop db || true
+        #       sudo docker rm db || true
+        #       sudo docker stop py_container || true
+        #       sudo docker rm py_container || true
+        #       # sudo docker stop nginx || true
+        #       # sudo docker rm nginx || true
+
+        #       # Start MySQL
+        #       sudo docker run -d \
+        #         --name db \
+        #         --network myapp-network-1 \
+        #         -e MYSQL_DATABASE=Library \
+        #         -e MYSQL_USER=$(DB_USER) \
+        #         -e MYSQL_PASSWORD=$(DB_PASSWORD) \
+        #         -e MYSQL_ROOT_PASSWORD=$(DB_PASSWORD) \
+        #         -v db_data:/var/lib/mysql \
+        #         mysql:8
+
+        #       # Start Python app
+        #       sudo docker pull devnsharma/py_container:$(Build.BuildId)
+        #       sudo docker run -d \
+        #         --name py_container \
+        #         --network myapp-network-1 \
+        #         -p 80:80 \
+        #         -e DB_USER=$(DB_USER) \
+        #         -e DB_PASSWORD=$(DB_PASSWORD) \
+        #         -e DB_HOST=$(DB_HOST) \
+        #         devnsharma/py_container:$(Build.BuildId)
+
+        #       # # Start nginx
+        #       # sudo docker run -d \
+        #       #   --name nginx \
+        #       #   --network myapp-network-1 \
+        #       #   -p 8080:80 \
+        #       #   -v $(pwd)/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+        #       #   nginx:latest
+        #     displayName: 'Pull and Run Docker Image on Server'
