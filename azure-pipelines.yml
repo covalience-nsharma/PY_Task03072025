@@ -49,12 +49,12 @@ stages:
             containerRegistry: 'Docker Login'
             command: 'login'
 
-        # - task: Docker@2
-        #   inputs:
-        #     containerRegistry: 'Docker Login'
-        #     repository: 'devnsharma/py_container_2'
-        #     command: 'buildAndPush'
-        #     Dockerfile: '**/Dockerfile'
+        - task: Docker@2
+          inputs:
+            containerRegistry: 'Docker Login'
+            repository: 'devnsharma/py_container_2'
+            command: 'buildAndPush'
+            Dockerfile: '**/Dockerfile'
 
 
         #SSH into server and pull & run the image
