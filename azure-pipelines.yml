@@ -28,20 +28,6 @@ stages:
             pip install -r requirements.txt
           displayName: 'Install dependencies'
 
-        # - task: ArchiveFiles@2
-        #   inputs:
-        #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-        #     includeRootFolder: false
-        #     archiveType: 'zip'
-        #     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        #     replaceExistingArchive: true
-
-        # - task: PublishBuildArtifacts@1
-        #   inputs:
-        #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        #     ArtifactName: 'drop'
-        #     publishLocation: 'Container'
-
         - script: |
             pip install pytest pytest-azurepipelines
             pytest
@@ -57,40 +43,19 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-        # - download: current
-        #   artifact: drop
-        #   displayName: 'Download drop artifact'
-
-        # - script: |
-        #     echo "Downloaded artifact contents:"
-        #     ls -lR $(Pipeline.Workspace)/drop
-        #   displayName: 'List downloaded artifact contents'
 
         - task: Docker@2
           inputs:
             containerRegistry: 'Docker Login'
             command: 'login'
 
-
-
-
         # - task: Docker@2
         #   inputs:
         #     containerRegistry: 'Docker Login'
-        #     repository: 'devnsharma/py_container'
+        #     repository: 'devnsharma/py_container_2'
         #     command: 'buildAndPush'
         #     Dockerfile: '**/Dockerfile'
 
-        # # Build Docker image
-        # - script: |
-        #    docker build -t devnsharma/py_task:$(Build.BuildId) $(Pipeline.Workspace)/drop
-        #   displayName: 'Build Docker Image'
-        
-        # # Push Docker image to Docker Hub
-        # - script: |
-        #     echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
-        #     docker push devnsharma/py_task:$(Build.BuildId)
-        #   displayName: 'Push Docker Image to Docker Hub'
 
         #SSH into server and pull & run the image
         # - task: SSH@0
@@ -123,7 +88,7 @@ stages:
         #         mysql:8
 
         #       # Start Python app
-        #       sudo docker pull devnsharma/py_container:$(Build.BuildId)
+        #       sudo docker pull devnsharma/py_container_2:$(Build.BuildId)
         #       sudo docker run -d \
         #         --name py_container \
         #         --network myapp-network-1 \
@@ -131,7 +96,7 @@ stages:
         #         -e DB_USER=$(DB_USER) \
         #         -e DB_PASSWORD=$(DB_PASSWORD) \
         #         -e DB_HOST=$(DB_HOST) \
-        #         devnsharma/py_container:$(Build.BuildId)
+        #         devnsharma/py_container_2:$(Build.BuildId)
 
         #       # # Start nginx
         #       # sudo docker run -d \
