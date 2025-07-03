@@ -66,20 +66,20 @@ stages:
         #     ls -lR $(Pipeline.Workspace)/drop
         #   displayName: 'List downloaded artifact contents'
 
-        # - task: Docker@2
-        #   inputs:
-        #     containerRegistry: 'Docker Login'
-        #     command: 'login'
-
-
-
-
         - task: Docker@2
           inputs:
             containerRegistry: 'Docker Login'
-            repository: 'devnsharma/py_container'
-            command: 'buildAndPush'
-            Dockerfile: '**/Dockerfile'
+            command: 'login'
+
+
+
+
+        # - task: Docker@2
+        #   inputs:
+        #     containerRegistry: 'Docker Login'
+        #     repository: 'devnsharma/py_container'
+        #     command: 'buildAndPush'
+        #     Dockerfile: '**/Dockerfile'
 
         # # Build Docker image
         # - script: |
