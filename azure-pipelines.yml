@@ -57,52 +57,34 @@ stages:
             Dockerfile: '**/Dockerfile'
 
 
-        #SSH into server and pull & run the image
-        # - task: SSH@0
-        #   inputs:
-        #     sshEndpoint: 'ubuntu@training.covalience.tech'
-        #     runOptions: 'inline'
-        #     inline: |
-        #       echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
-        #       # Ensure network and volume exist
-        #       # sudo docker network create myapp-network-1 || true
-        #       sudo docker volume create db_data || true
+        # SSH into server and pull & run the image
+        - task: SSH@0
+          inputs:
+            sshEndpoint: 'ubuntu@training.covalience.tech'
+            runOptions: 'inline'
+            inline: |
+              echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
+              # Ensure network and volume exist
+              # sudo docker network create myapp-network-1 || true
+              # sudo docker volume create db_data || true
 
-        #       # Clean up old containers if they exist
-        #       sudo docker stop db || true
-        #       sudo docker rm db || true
-        #       sudo docker stop py_container || true
-        #       sudo docker rm py_container || true
-        #       # sudo docker stop nginx || true
-        #       # sudo docker rm nginx || true
+              # Clean up old containers if they exist
+              # sudo docker stop db || true
+              # sudo docker rm db || true
+              # sudo docker stop py_container || true
+              # sudo docker rm py_container || true
+              # sudo docker stop nginx || true
+              # sudo docker rm nginx || true
 
-        #       # Start MySQL
-        #       sudo docker run -d \
-        #         --name db \
-        #         --network myapp-network-1 \
-        #         -e MYSQL_DATABASE=Library \
-        #         -e MYSQL_USER=$(DB_USER) \
-        #         -e MYSQL_PASSWORD=$(DB_PASSWORD) \
-        #         -e MYSQL_ROOT_PASSWORD=$(DB_PASSWORD) \
-        #         -v db_data:/var/lib/mysql \
-        #         mysql:8
+              # Start Python app
+              sudo docker pull devnsharma/py_container_2:$(Build.BuildId)
+              sudo docker run -it --name py_container_2 -p 80:80 -d devnsharma/py_container_2:$(Build.BuildId)
 
-        #       # Start Python app
-        #       sudo docker pull devnsharma/py_container_2:$(Build.BuildId)
-        #       sudo docker run -d \
-        #         --name py_container \
-        #         --network myapp-network-1 \
-        #         -p 80:80 \
-        #         -e DB_USER=$(DB_USER) \
-        #         -e DB_PASSWORD=$(DB_PASSWORD) \
-        #         -e DB_HOST=$(DB_HOST) \
-        #         devnsharma/py_container_2:$(Build.BuildId)
-
-        #       # # Start nginx
-        #       # sudo docker run -d \
-        #       #   --name nginx \
-        #       #   --network myapp-network-1 \
-        #       #   -p 8080:80 \
-        #       #   -v $(pwd)/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
-        #       #   nginx:latest
-        #     displayName: 'Pull and Run Docker Image on Server'
+              # # Start nginx
+              # sudo docker run -d \
+              #   --name nginx \
+              #   --network myapp-network-1 \
+              #   -p 8080:80 \
+              #   -v $(pwd)/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+              #   nginx:latest
+          displayName: 'Pull and Run Docker Image on Server'
