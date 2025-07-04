@@ -76,6 +76,17 @@ stages:
               # sudo docker stop nginx || true
               # sudo docker rm nginx || true
 
+              docker pull keinos/sqlite3:latest
+
+
+              #Start SQLLITE3
+              docker pull keinos/sqlite3:latest
+              docker run -d \
+                --name sqlite3 \
+                --network myapp-network-1 \
+                -v sqlite_data:/data \
+                keinos/sqlite3:latest
+                
               # Start Python app
               sudo docker pull devnsharma/py_container_2:$(Build.BuildId)
               sudo docker run -it --name py_container_2 -p 80:80 -d devnsharma/py_container_2:$(Build.BuildId)

@@ -6,6 +6,7 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "main.py"]
+EXPOSE 9999
 
-EXPOSE 80
+# CMD ["python3", "main.py"]
+ENTRYPOINT [ "tail", "-f", "/dev/null" ]
