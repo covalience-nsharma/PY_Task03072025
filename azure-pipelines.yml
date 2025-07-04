@@ -71,10 +71,10 @@ stages:
               # Clean up old containers if they exist
               # sudo docker stop db || true
               # sudo docker rm db || true
-              # sudo docker stop py_container || true
-              # sudo docker rm py_container || true
-              # sudo docker stop nginx || true
-              # sudo docker rm nginx || true
+              sudo docker stop py_container || true
+              sudo docker rm py_container || true
+              sudo docker stop sqlite3 || true
+              sudo docker rm sqlite3 || true
 
               docker pull keinos/sqlite3:latest
 
