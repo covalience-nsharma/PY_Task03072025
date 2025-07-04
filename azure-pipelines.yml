@@ -65,19 +65,14 @@ stages:
             inline: |
               echo "$(DOCKER_PASSWORD)" | docker login -u "$(DOCKER_USERNAME)" --password-stdin
               # Ensure network and volume exist
-              # sudo docker network create myapp-network-1 || true
-              # sudo docker volume create db_data || true
               sudo docker volume create sqlite_data || true
+              
               # Clean up old containers if they exist
-              # sudo docker stop db || true
-              # sudo docker rm db || true
-              sudo docker stop py_container || true
-              sudo docker rm py_container || true
+
+              sudo docker stop py_container_2 || true
+              sudo docker rm py_container_2 || true
               sudo docker stop sqlite3 || true
               sudo docker rm sqlite3 || true
-
-              docker pull keinos/sqlite3:latest
-
 
               #Start SQLLITE3
               sudo docker pull keinos/sqlite3:latest
