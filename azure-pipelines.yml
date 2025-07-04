@@ -67,7 +67,7 @@ stages:
               # Ensure network and volume exist
               # sudo docker network create myapp-network-1 || true
               # sudo docker volume create db_data || true
-
+              sudo docker volume create sqlite_data || true
               # Clean up old containers if they exist
               # sudo docker stop db || true
               # sudo docker rm db || true
@@ -81,11 +81,7 @@ stages:
 
               #Start SQLLITE3
               sudo docker pull keinos/sqlite3:latest
-              sudo docker run -d \
-                --name sqlite3 \
-                --network myapp-network-1 \
-                -v sqlite_data:/data \
-                keinos/sqlite3:latest
+              sudo docker run -it  --name sqlite3 --network myapp-network-1 -v sqlite_data:/data -d keinos/sqlite3:latest
 
               # Start Python app
               sudo docker pull devnsharma/py_container_2:$(Build.BuildId)
